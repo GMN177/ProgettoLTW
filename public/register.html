@@ -1,0 +1,118 @@
+<!doctype html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Register</title>
+    <link href="css/bootstrap/bootstrap.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+</head>
+
+<body class="text-center">
+    <!-- Header -->
+    <header class="p-3 bg-dark text-white">
+        <div class="container" id="header">
+            <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+                <a class="navbar-brand" href="index"><img src="img/logo.png" alt="" width="60"></a>
+                <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-lg-0">
+                    <li><a href="index" class="nav-link px-2" id="userandrandom">Home</a></li>
+                    <li><a href="#" class="nav-link px-2" id="userandrandom" data-bs-toggle="modal"
+                            data-bs-target="#exampleModal">Search for a user</a></li>
+                    <li><a href="/randomSong" class="nav-link px-2" id="userandrandom">Random song</a></li>
+                </ul>
+                <form id='lyricsForm' method='GET' autocomplete="off" action="/song" class="col-lg-3 me-4">
+                    <div class="input-group">
+                        <input type="text" name="song" id="myInput" list='autocmpl'
+                            class="form-control border border-1 border-secondary rounded-start"
+                            placeholder="Type the name of a song">
+                        <button class="btn rounded-end" id="searchbtn">Cerca</button>
+                    </div>
+                </form>
+                <div id="AOL" class="text-end">
+                    <button type="button" class="btn btn-outline-light me-2" id="loginbtn"
+                        onclick="location.href='login'">Login</button>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- Modal search -->
+    <div class="modal fade" id="exampleModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Search for a user</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <br>
+                    <form id='userForm' method='GET' action="/getUser">
+                        <div class="input-group">
+                            <input type="text" name="email" class="form-control border-2 rounded-start"
+                                style="border-color: #1ed760;" placeholder="Type the email of a user" id="userInput">
+                            <button class="btn" id="searchbtn">Cerca</button>
+                        </div>
+                    </form>
+                    <br>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Body -->
+    <div class="d-flex h-100 p-3 mx-auto flex-column">
+        <div class="row justify-content-center mx-3">
+            <div class="col-lg-5 col-md-7 col-sm-10 bg-light rounded">
+                <h1 class="mt-3">Register</h1>
+                <!-- Message alerts -->
+                <% if (typeof message !== "undefined" && typeof type !== "undefined") { %>
+                <p class='alert <%= type %>'><%= message %></p>
+                <% } %>
+                <form method="POST" action="/register" enctype="multipart/form-data">
+                    <div class="form-group mb-2">
+                        <label for="email" class="text-dark mb-1">Email address</label>
+                        <input name="email" type="email" class="form-control" id="email" placeholder="Enter email"
+                            required>
+                    </div>
+                    <div class="form-group mb-2">
+                        <label for="username" class="text-dark mb-1">Username</label>
+                        <input name="username" type="text" class="form-control" id="username"
+                            placeholder="Enter username" required>
+                    </div>
+                    <div class="form-group mb-2">
+                        <label for="firstName" class="text-dark mb-1">First Name</label>
+                        <input name="firstname" type="text" class="form-control" id="firstName"
+                            placeholder="Enter First Name" required>
+                    </div>
+                    <div class="form-group mb-2">
+                        <label for="lastName" class="text-dark mb-1">Last Name</label>
+                        <input name="lastname" type="text" class="form-control" id="lastName"
+                            placeholder="Enter Last Name" required>
+                    </div>
+                    <div class="form-group mb-2">
+                        <label for="password" class="text-dark mb-1">Password</label>
+                        <input name="password" type="password" class="form-control" id="password" placeholder="Password"
+                            required>
+                    </div>
+                    <div class="form-group mb-2">
+                        <label for="confirmPassword" class="text-dark mb-1">Confirm Password</label>
+                        <input name="confirmPassword" type="password" class="form-control" id="confirmPassword"
+                            placeholder="Re-enter your password" required>
+                    </div>
+                    <div class="form-group mb-2">
+                        <label for="profilepicture" class="text-dark mb-1">Profile Picture (Not Required)</label>
+                        <input name="profilepicture" type="file" class="form-control" id="profilepicture">
+                    </div>
+                    <button type="submit" class="btn mt-2" id="registerbtn">Register</button>
+                </form>
+                <nav class="nav nav-masthead justify-content-center mt-3">
+                    <a class="nav-link">Alredy registered?</a>
+                    <a class="nav-link active mb-4" href="login">Sign In</a>
+                </nav>
+            </div>
+        </div>
+    </div>
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script src="js/bootstrap/bootstrap.bundle.min.js"></script>
+    <script src="js/header.js" charset="utf-8"></script>
+</body>
+
+</html>

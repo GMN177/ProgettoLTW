@@ -1,0 +1,132 @@
+<!doctype html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title><%= songdisplay %></title>
+    <link href="css/bootstrap/bootstrap.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+</head>
+
+<body class="text-center">
+    <!-- Header -->
+    <header class="p-3 bg-dark text-white">
+        <div class="container" id="header">
+            <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+                <a class="navbar-brand" href="index"><img src="img/logo.png" alt="" width="60"></a>
+                <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-lg-0">
+                    <li><a href="index" class="nav-link px-2" id="userandrandom">Home</a></li>
+                    <li><a href="#" class="nav-link px-2" id="userandrandom" data-bs-toggle="modal"
+                            data-bs-target="#exampleModal">Search for a user</a></li>
+                    <li><a href="/randomSong" class="nav-link px-2" id="userandrandom">Random song</a></li>
+                </ul>
+                <form id='lyricsForm' method='GET' autocomplete="off" action="/song" class="col-lg-3 me-4">
+                    <div class="input-group">
+                        <input type="text" name="song" id="myInput" list='autocmpl'
+                            class="form-control border border-1 border-secondary rounded-start"
+                            placeholder="Type the name of a song">
+                        <button class="btn rounded-end" id="searchbtn">Cerca</button>
+                    </div>
+                </form>
+                <div id="AOL" class="text-end">
+                    <button type="button" class="btn me-2" id="loginbtn" onclick="location.href='login'">Login</button>
+                    <button type="button" class="btn" id="registerbtn"
+                        onclick="location.href='register'">Sign-up</button>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- Modal search -->
+    <div class="modal fade" id="exampleModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Search for a user</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <br>
+                    <form id='userForm' method='GET' action="/getUser">
+                        <div class="input-group">
+                            <input type="text" name="email" class="form-control border-2 rounded-start"
+                                style="border-color: #1ed760;" placeholder="Type the email of a user" id="userInput">
+                            <button class="btn" id="searchbtn">Cerca</button>
+                        </div>
+                    </form>
+                    <br>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Body -->
+    <main role="main" class="container p-3">
+        <div class="row align-content-center">
+            <!-- Lyrics-->
+            <div class="col-md-8 text-white">
+                <article class="song-lyrics">
+                    <h1 id="song-title" class="song-title"><%= songtitle %></h1>
+                    <p class="song-author ">By <a id="song-artist"><%= songartist %></a></p>
+                    <hr>
+                    <p id="songLyrics" class="mb-4"><%- songlyrics %></p>
+                    <hr>
+                </article>
+            </div>
+            <!-- Sidebar -->
+            <div class="col-md-4">
+                <% if (typeof coverlink !== "undefined") { %>
+                <div class="row align-content-center">
+                    <div class="position-sticky" style="top: 2rem;">
+                        <div class="p-4 mb-3">
+                            <div class="col-auto d-none d-lg-block">
+                                <img src="<%= coverlink %>" width="200" height="200" class="rounded"
+                                    preserveAspectRatio="xMidYMid slice" focusable="false">
+                                <rect width="100%" height="100%" fill="#55595c"></rect>
+                                </img>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <% } %>
+                <!-- Sticky list -->
+                <div class="position-sticky" style="top: 2rem;">
+                    <ul class="list-unstyled">
+                        <li><button type="button" class="btn mb-1 btn-sm" id="registerbtn" onclick="saveSong()">Salva
+                                la canzone</button></li>
+                        <li><button type="button" id="bottone" class="btn btn-danger mb-1 btn-sm"
+                                onclick="copiaTesto()">Copia il testo</button></li>
+                        <li><a href="https://twitter.com/intent/tweet?text=Ecco una canzone per te!"
+                                class="twitter-share-button" data-size="large" data-text="Guarda questo testo"
+                                data-hashtags="LyricsShare" data-lang="it" data-show-count="false">Tweet</a>
+                        </li>
+                        <li>
+                            <div class="fb-share-button" data-href="window.location.href" data-layout="button_count"
+                                data-size="large">
+                                <a href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fdevelopers.facebook.com%2Fdocs%2Fplugins%2F&amp; src=sdkpreparse"
+                                    target="_blank" class="fb-xfbml-parse-ignore">Condividi</a>
+                            </div>
+                        </li>
+                    </ul>
+                    <!-- Message alerts -->
+                    <div class="p-2 m-lg-3">
+                        <p id='message' class='alert'></p>
+                        <% if (typeof message !== "undefined" && typeof type !== "undefined") { %>
+                        <p class='alert <%= type %>'><%= message %></p>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <div id="fb-root"></div>
+    <script async defer crossorigin="anonymous" src="https://connect.facebook.net/it_IT/sdk.js#xfbml=1&version=v10.0"
+        nonce="sVVZpYHC"></script>
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script src="js/bootstrap/bootstrap.bundle.min.js"></script>
+    <script src="js/header.js" charset="utf-8"></script>
+    <script src="js/song.js" charset="utf-8"></script>
+    <script src="https://cdn.jsdelivr.net/gh/vast-engineering/jquery-popup-overlay@2/jquery.popupoverlay.min.js">
+    </script>
+    <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+</body>
+
+</html>

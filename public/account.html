@@ -1,0 +1,241 @@
+<!doctype html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title><%= username %>'s Account</title>
+    <link href="css/bootstrap/bootstrap.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+</head>
+
+<body class="text-center">
+    <!-- Header -->
+    <header class="p-3 bg-dark text-white">
+        <div class="container" id="header">
+            <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+                <a class="navbar-brand" href="index"><img src="img/logo.png" alt="" width="60"></a>
+                <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-lg-0">
+                    <li><a href="index" class="nav-link px-2 text-white" id="userandrandom">Home</a></li>
+                    <li><a href="#" class="nav-link px-2" id="userandrandom" data-bs-toggle="modal"
+                            data-bs-target="#exampleModal">Search for a user</a></li>
+                    <li><a href="/randomSong" class="nav-link px-2" id="userandrandom">Random song</a></li>
+                </ul>
+                <form id='lyricsForm' method='GET' autocomplete="off" action="/song" class="col-lg-3 me-4">
+                    <div class="input-group">
+                        <input type="text" name="song" id="myInput" list='autocmpl'
+                            class="form-control border border-1 border-secondary rounded-start"
+                            placeholder="Type the name of a song">
+                        <button class="btn rounded-end" id="searchbtn">Cerca</button>
+                    </div>
+                </form>
+                <div class="text-end">
+                    <form method="POST" action="/logout">
+                        <button type="submit" class="btn" id="registerbtn">Esci</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- Modal search -->
+    <div class="modal fade" id="exampleModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Search for a user</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <br>
+                    <form id='userForm' method='GET' action="/getUser">
+                        <div class="input-group">
+                            <input type="text" name="email" class="form-control border-2 rounded-start"
+                                style="border-color: #1ed760;" placeholder="Type the email of a user" id="userInput">
+                            <button class="btn" id="searchbtn">Cerca</button>
+                        </div>
+                    </form>
+                    <br>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Body -->
+    <div class="row">
+        <div class="col-md-9 mx-auto">
+            <div class="rounded overflow-hidden" style="background-color: #333">
+                <!-- Profile widget -->
+                <div class="container mt-5 d-flex justify-content-center">
+                    <div class="col-lg-11">
+                        <div class="row overflow-hidden flex-md-row mt-100">
+                            <div class="col-auto d-none d-lg-block ">
+                                <img src="<%= profPicture %>" width="200" height="200" class="rounded"
+                                    focusable="false">
+                                <rect width="100%" height="100%" fill="#55595c"></rect>
+                                </img>
+                            </div>
+                            <div class="col p-4 d-flex flex-column">
+                                <h4 class="text-white"><%= username %></h4>
+                                <h5 class="text-light"><%= firstname %> <%= lastname %></h5>
+                                <h5 class="text-muted"><%= email %></h5>
+                                <hr style="color:white">
+                                <h5 class="mb-auto" style="color: #1ed760">Saved Songs: <%= count %></h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Message alerts -->
+                <% if (typeof message !== "undefined" && typeof type !== "undefined") { %>
+                <p class='alert <%= type %>'><%= message %></p>
+                <% } %>
+                <!-- Tabs -->
+                <div class="col-md-12 mx-auto">
+                    <div class="row mx-auto">
+                        <div class="col mx-auto">
+                            <!-- Tab links -->
+                            <ul class="nav nav-justified nav-tabs" role="tablist">
+                                <li class="nav-item">
+                                    <a class="nav-link active border-bottom-0" href="#savedSongs" role="tab"
+                                        data-bs-toggle="tab">Saved songs</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link border-bottom-0" href="#editProfile" role="tab"
+                                        data-bs-toggle="tab">Edit profile</a>
+                                </li>
+                            </ul>
+                            <!-- Tab panels -->
+                            <div class="tab-content">
+
+                                <div role="tabpanel" class="tab-pane fade show active" style="border-color: #f8f9fa;"
+                                    id="savedSongs">
+                                    <div class="py-5 bg-light">
+                                        <div class="container">
+                                            <div
+                                                class="row justify-content-center row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+                                                <% songs.forEach(function(song){ %>
+                                                <div class="col">
+                                                    <div class="card box-shadow h-100" width="140">
+                                                        <img class="img-fluid shadow-sm rounded-top"
+                                                            src="<%= song.coverlink %>"
+                                                            preserveAspectRatio="xMidYMid slice" focusable="false">
+                                                        </img>
+                                                        <div class="card-body align-middle">
+                                                            <h5 class="mb-2">
+                                                                <%= song.songtitle %>
+                                                            </h5>
+                                                            <p class="mb-1 text-muted">
+                                                                <%= song.album %>
+                                                            </p>
+                                                            <div class="mb-auto">
+                                                                <%= song.songartist %>
+                                                            </div>
+                                                        </div>
+                                                        <div class="card-footer position-relative">
+                                                            <a href="/song?song=<%= song.songtitle %> - <%= song.songartist %>"
+                                                                class="stretched-link text-decoration-none">Full
+                                                                lyrics</a>
+                                                        </div>
+                                                        <div class="card-footer position-relative">
+                                                            <form method="POST"
+                                                                action="/remove?song=<%= song.songtitle %> - <%= song.songartist %>">
+                                                                <button type="submit"
+                                                                    class="btn link-danger stretched-link">Delete</button>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <% }); %>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div role="tabpanel " class="tab-pane fade" id="editProfile">
+                                    <div class="bg-light">
+                                        <br>
+                                        <br>
+                                        <div class="row justify-content-center">
+                                            <div class="col-lg-8 col-md-9 col-sm-10">
+                                                <label class="mb-3">Change Picture</label>
+                                                <form method="POST" action="/picture" class="g-5 px-4"
+                                                    enctype="multipart/form-data">
+                                                    <input name="profilepicture" type="file" class="form-control mb-4"
+                                                        required></input>
+                                                    <button class="btn mb-3" type="submit"
+                                                        id="registerbtn">Change</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                        <hr>
+                                        <div class="row justify-content-center">
+                                            <div class="col-lg-8 col-md-9 col-sm-10">
+                                                <label class="mb-3">Change Username</label>
+                                                <form method='POST' action="/changeUsername" class="g-5 px-4">
+                                                    <input name="newusername" type="text" class="form-control mb-4"
+                                                        placeholder="Insert new username" required></input>
+                                                    <button class="btn mb-3" type="submit"
+                                                        id="registerbtn">Submit</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                        <hr>
+                                        <div class="row justify-content-center">
+                                            <div class="col-lg-8 col-md-9 col-sm-10">
+                                                <label class="mb-3">Change Password</label>
+                                                <form method='POST' action="/changePassword" class="g-5 px-4">
+                                                    <input name="newpassword" type="text" class="form-control mb-4"
+                                                        placeholder="Insert new password" required></input>
+                                                    <input name="newpasswordconfirm" type="text"
+                                                        class="form-control mb-4" placeholder="Confirm new password"
+                                                        required></input>
+                                                    <input name="oldpassword" type="text" class="form-control mb-4"
+                                                        placeholder="Insert old password" required></input>
+                                                    <button class="btn mb-3" id="registerbtn"
+                                                        type="submit">Submit</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                        <hr>
+                                        <a href="#" class="btn btn-danger mt-4 mb-5" data-bs-toggle="modal"
+                                            data-bs-target="#deleteModal">Delete Account</a>
+
+                                        <div class="modal fade" id="deleteModal" tabindex="-1"
+                                            aria-labelledby="deleteModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                            aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <h5 class="modal-title" id="deleteModalLabel">Are you sure you
+                                                            want
+                                                            to delete your account?<br>
+                                                            <strong>This action is irreversible!</strong>
+                                                        </h5>
+                                                        <br>
+                                                        <form method="POST" action="/deleteUser">
+                                                            <button type="submit" class="btn btn-danger">Delete
+                                                                Account</button>
+                                                        </form>
+                                                        <br>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="py-4 px-4 pb-5">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script src="js/bootstrap/bootstrap.bundle.min.js"></script>
+    <script src="js/header.js" charset="utf-8"></script>
+</body>
+
+</html>

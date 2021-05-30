@@ -1,0 +1,77 @@
+body {
+    background-color: #333;
+    font-family: 'Open Sans', sans-serif;
+}
+
+.nav-tabs .nav-link:not(.active) {
+    background-color: rgb(71, 71, 71) !important;
+    color: white !important;
+    border-color: rgb(71, 71, 71);
+}
+
+.nav-tabs .nav-link:not(.active):hover {
+    background-color: rgb(71, 71, 71) !important;
+    color: #1ed760 !important;
+    border-color: rgb(71, 71, 71);
+}
+
+.nav-tabs .nav-link {
+    background-color: #f8f9fa !important;
+}
+
+a {
+    color: black;
+}
+
+a:hover {
+    color: #1ed760;
+}
+
+#greenHover:hover {
+    color: #1ed760;
+}
+
+#userandrandom {
+    color: white;
+}
+
+#userandrandom:hover {
+    color: #1ed760;
+}
+
+#header {
+    max-width: 100%;
+}
+
+#searchbtn {
+    background-color: #1ed760;
+    color: white;
+}
+
+#searchbtn:hover {
+    background-color: #8d8d8d;
+    color: white;
+}
+
+#loginbtn {
+    background-color: rgba(221, 221, 221, 0);
+    color: white;
+    border-color: white;
+}
+
+#loginbtn:hover {
+    background-color: #1ed760;
+    color: white;
+    border-color: #1ed760;
+}
+
+#registerbtn {
+    background-color: #1ed760;
+    color: white;
+}
+
+#registerbtn:hover {
+    background-color: #8d8d8d;
+    color: white;
+    border-color: #8d8d8d;
+}
