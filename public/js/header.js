@@ -75,7 +75,7 @@ function getCookie(cname) {
 function checkPage() {
     var auth = getCookie('AuthToken')
     if (auth != '') {
-        if (window.location.pathname === '/login' || window.location.pathname === '/register') window.location.replace('/index')
+        if (window.location.pathname === '/login' || window.location.pathname === '/register') window.location.replace('/')
         $('#AOL').html('<a class="btn" id = "loginbtn" href="/account">Account</a>')
     }
 }

@@ -28,14 +28,14 @@ function getCookie(cname) {
 //save song to user account
 function saveSong() {
     //checks if user is logged in
-    var auth = getCookie('AuthToken')
-    if (auth != '') {
+    //var auth = getCookie('AuthToken')
+    //if (auth != '') {
         var artist = $('#song-artist').text().trim()
         var title = $('#song-title').text().trim()
         var lyrics = $('#songLyrics').html().replaceAll('<br>', '\r\n').trim()
         console.log(lyrics)
         //call to server
-        $.post('http://localhost:3000/addSong', {
+        $.post('http://localhost:3000/song/add', {
             artist: artist,
             title: title,
             lyrics: lyrics
@@ -51,8 +51,8 @@ function saveSong() {
                 $('#message').text('Server Error!')
             }
         })
-    } else {
-        $('#message').attr('class', 'alert alert-danger')
-        $('#message').text('Per salvare canzoni devi prima fare il login')
-    }
+    //} else {
+    //    $('#message').attr('class', 'alert alert-danger')
+    //    $('#message').text('Per salvare canzoni devi prima fare il login')
+    //}
 }
