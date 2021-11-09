@@ -2,7 +2,6 @@
 
 //calls functions when page is ready
 $(() => {
-    checkPage()
     autocomplete()
 })
 
@@ -56,26 +55,5 @@ function autocomplete() {
                 }
                 inp.focus()
             })
-    }
-}
-
-//gets cookie if present
-function getCookie(cname) {
-    var name = cname + '='
-    var ca = document.cookie.split(';')
-    for (var i = 0; i < ca.length; i++) {
-        var c = ca[i]
-        while (c.charAt(0) == ' ') c = c.substring(1)
-        if (c.indexOf(name) == 0) return c.substring(name.length, c.length)
-    }
-    return ''
-}
-
-//checks if auth cookie exists 
-function checkPage() {
-    var auth = getCookie('AuthToken')
-    if (auth != '') {
-        if (window.location.pathname === '/login' || window.location.pathname === '/register') window.location.replace('/')
-        $('#AOL').html('<a class="btn" id = "loginbtn" href="/account">Account</a>')
     }
 }

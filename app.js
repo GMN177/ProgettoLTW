@@ -12,7 +12,6 @@ const passport = require('passport')
 const favicon = require('serve-favicon')
 
 require('./config/passport')(passport)
-const routes = require('./routes.js')
 const account_routes = require('./routes/account')
 const index_routes = require('./routes/index')
 const login_routes = require('./routes/login')
@@ -25,7 +24,6 @@ const app = express()
 
 //ejs template engine configuration
 app.engine('html', engine.__express)
-app.set('views', path.join(__dirname, 'public'))
 app.set('view engine', 'html')
 
 //logger
@@ -71,9 +69,7 @@ app.use(passport.session())
 app.use(favicon(__dirname + '/public/img/favicon.ico'))
 
 //static file server for public folder
-app.use(express.static(path.join(__dirname, './public'), {
-    'index': false
-}))
+app.use(express.static(path.join(__dirname, './public')))
 
 //all routes
 app.use('/account', account_routes)

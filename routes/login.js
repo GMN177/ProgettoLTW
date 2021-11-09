@@ -8,8 +8,10 @@ router.get('/', (req, res) => {
         res.redirect('/account')
     } else {
         res.render('login', {
-            message: req.flash('message'),
-            type: req.flash('type')
+            user: req.user,
+            error: req.flash('error'),
+            warn: req.flash('warn'),
+            success: req.flash('success'),
         })
     }
 })

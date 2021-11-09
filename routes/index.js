@@ -8,8 +8,9 @@ router.get('/', (req, res) => {
         .then(result => {
             res.render('index', {
                 user: req.user,
-                message: req.flash('message'),
-                type: req.flash('type'),
+                error: req.flash('error'),
+                warn: req.flash('warn'),
+                success: req.flash('success'),
                 songs: result.rows
             })
         }).catch(err => {

@@ -10,19 +10,24 @@ module.exports = passport => {
         },
         function (req, username, password, done) {
             console.log('POST /login')
-            pool.query('SELECT password FROM users WHERE username = $1', [username])
+            pool.query('SELECT id, email, firstname, lastname, password, picture FROM users WHERE username = $1', [username])
                 .then(result => {
-                    if (result.rows[0] === null) {
-                        return done(null, false, req.flash('message', "Incorrect username or password"))
+                    if (result.rowCount === 0) {
+                        return done(null, false, req.flash('warn', "Incorrect username or password"))
                     }
                     bcrypt.compare(password, result.rows[0].password)
                         .then(valid => {
                             if (valid) {
                                 return done(null, {
-                                    username: username
+                                    id: result.rows[0].id,
+                                    username: username,
+                                    email: result.rows[0].email,
+                                    firstname: result.rows[0].firstname,
+                                    lastname: result.rows[0].lastname,
+                                    picture: result.rows[0].picture
                                 })
                             } else {
-                                return done(null, false, req.flash('message', "Incorrect username or password"))
+                                return done(null, false, req.flash('warn', "Incorrect username or password"))
                             }
                         })
                 })
@@ -40,13 +45,19 @@ module.exports = passport => {
             pool.query('SELECT id FROM users WHERE username = $1 OR email = $2', [username, req.body.email])
                 .then(result => {
                     if (result.rows[0]) {
-                        return done(null, false, req.flash('message', 'Sorry, this username or email is already taken.'))
+                        return done(null, false, req.flash('warn', 'Sorry, this username or email is already taken.'))
                     }
-                    pool.query('INSERT INTO users (id, username, email, firstname, lastname, password, picture) VALUES ($1, $2, $3, $4, $5, $6, $7)', [uuidv4(), username, req.body.email, req.body.firstname, req.body.lastname, passHash, filename])
+                    let uid = uuidv4()
+                    pool.query('INSERT INTO users (id, username, email, firstname, lastname, password, picture) VALUES ($1, $2, $3, $4, $5, $6, $7)', [uid, username, req.body.email, req.body.firstname, req.body.lastname, passHash, filename])
                         .then(result => {
                             console.log('User [' + username + '] has registered.')
                             return done(null, {
-                                username: username
+                                id: uid,
+                                username: username,
+                                email: req.body.email,
+                                firstname: req.body.firstname,
+                                lastname: req.body.lastname,
+                                picture: filename
                             })
                         })
                 })
@@ -68,12 +79,10 @@ module.exports = passport => {
                                 pool.query('UPDATE users SET password = $1 WHERE username = $2', [newPassHash, req.user.username])
                                     .then(() => {
                                         console.log('User [' + req.user.username + '] has updated their password.')
-                                        return done(null, {
-                                            username: req.user.username
-                                        }, req.flash('message', 'Your password has been updated.'))
+                                        return done(null, req.user, req.flash('success', 'Your password has been updated.'))
                                     })
                             } else {
-                                return done(null, false, req.flash('message', "Incorrect current password entered"))
+                                return done(null, false, req.flash('warn', "Incorrect current password entered"))
                             }
                         })
                 })
@@ -89,24 +98,40 @@ module.exports = passport => {
             pool.query('SELECT id FROM users WHERE username = $1', [req.body.username])
                 .then(result => {
                     if (result.rows[0]) {
-                        return done(null, false, req.flash('message', "The new username is already taken!"))
+                        return done(null, false, req.flash('warn', "The new username is already taken!"))
                     }
                     pool.query('UPDATE users SET username = $1 WHERE username = $2', [newusername, req.user.username])
                         .then(result => {
                             console.log('User [' + req.user.username + '] has updated their username to [' + newusername + '].')
                             return done(null, {
-                                username: newusername
-                            }, req.flash('message', 'Your password has been updated.'))
+                                id: req.user.id,
+                                username: newusername,
+                                email: req.user.email,
+                                firstname: req.user.firstname,
+                                lastname: req.user.lastname,
+                                picture: req.user.picture
+                            }, req.flash('success', 'Your password has been updated.'))
                         })
                 })
                 .catch(err => done(err))
         }))
 
     passport.serializeUser((user, done) => {
-        done(null, user)
+        done(null, user.id)
     })
 
-    passport.deserializeUser((user, done) => {
-        done(null, user)
+    passport.deserializeUser((id, done) => {
+        pool.query('SELECT username, email, firstname, lastname, password, picture FROM users WHERE id = $1', [id])
+            .then(result => result.rows[0])
+            .then(user => {
+                return done(null, {
+                    id: id,
+                    username: user.username,
+                    email: user.email,
+                    firstname: user.firstname,
+                    lastname: user.lastname,
+                    picture: user.picture
+                })
+            })
     })
 }

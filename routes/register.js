@@ -2,16 +2,18 @@
 const express = require('express')
 const passport = require('passport')
 const multer = require('multer')
+const crypto = require('crypto')
 const router = express.Router()
 
-var upload = multer({
+const upload = multer({
     storage: multer.diskStorage({
         destination: function (req, file, cb) {
             cb(null, process.env.IMAGE_PATH)
         },
-        filename: function (req, file, cb) {
-            if (req.user) cb(null, req.user.username.replace(/\W/g, '') + '.png')
-            else cb(null, req.body.username.replace(/\W/g, '') + '.png')
+        filename: (req, file, cb) => {
+            crypto.randomBytes(16, function (err, raw) {
+                cb(err, err ? undefined : raw.toString('hex') + '.jpg')
+            })
         }
     })
 })
@@ -21,8 +23,10 @@ router.get('/', function (req, res) {
         res.redirect('/account')
     } else {
         res.render('register', {
-            message: req.flash('message'),
-            type: req.flash('type')
+            user: req.user,
+            error: req.flash('error'),
+            warn: req.flash('warn'),
+            success: req.flash('success'),
         })
     }
 })
