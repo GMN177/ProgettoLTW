@@ -23,7 +23,7 @@ const upload = multer({
 })
 
 router.get('/', ensureAuthenticated, (req, res) => {
-    pool.query('SELECT DISTINCT songartist, songtitle, album, coverlink FROM songs WHERE userid = $1', [req.user.id])
+    pool.query('SELECT DISTINCT songartist, songtitle, album, coverlink FROM usersongs JOIN songs ON songs.id = usersongs.songid WHERE usersongs.userid = $1', [req.user.id])
         .then(result => result.rows)
         .then(songs => {
             res.render('account', {
@@ -54,7 +54,7 @@ router.get('/other', (req, res) => {
                 res.redirect(req.header('Referer') || '/')
                 return
             }
-            pool.query('SELECT DISTINCT songartist, songtitle, album, coverlink FROM songs WHERE userid = $1', [users[0].id])
+            pool.query('SELECT DISTINCT songartist, songtitle, album, coverlink FROM usersongs JOIN songs ON songs.id = usersongs.songid WHERE usersongs.userid = $1', [users[0].id])
                 .then(result => result.rows)
                 .then(songs => {
                     res.render('accountOther', {

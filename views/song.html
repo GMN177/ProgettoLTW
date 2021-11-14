@@ -97,8 +97,17 @@
                 <!-- Sticky list -->
                 <div class="position-sticky" style="top: 2rem;">
                     <ul class="list-unstyled">
-                        <li><button type="button" class="btn mb-1 btn-sm" id="registerbtn" onclick="saveSong()">Salva
-                                la canzone</button></li>
+                        <li>
+                            <form id='saveSongForm' method='POST' action="/song/add">
+                                <input type="text" id="song-title" class="song-title" value="<%= songtitle %>"
+                                    name="title" hidden>
+                                <input type="text" id="song-artist" class="song-author" value="<%= songartist %>"
+                                    name="artist" hidden>
+                                <input type="text" id="songLyrics" class="mb-4" value="<%= songlyrics %>" name="lyrics"
+                                    hidden>
+                                <button class="btn mb-1 btn-sm" id="registerbtn">Salva la canzone</button>
+                            </form>
+                        </li>
                         <li><button type="button" id="bottone" class="btn btn-danger mb-1 btn-sm"
                                 onclick="copiaTesto()">Copia il testo</button></li>
                         <li><a href="https://twitter.com/intent/tweet?text=Ecco una canzone per te!"

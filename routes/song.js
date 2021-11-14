@@ -1,9 +1,11 @@
 'use strict'
 const express = require('express')
 const fetch = require('node-fetch')
+const uuidv4 = require('uuid').v4
 const pool = require('../config/database')
 const {
-    ensureAuthenticated
+    ensureAuthenticated,
+    findLyrics
 } = require('../util/index')
 const router = express.Router()
 
@@ -22,7 +24,7 @@ router.get('/', (req, res) => {
             var found = false
             result.rows.forEach(row => {
                 //searches songs chached in database
-                if (!found && row.songartist === artist && row.songtitle === title && row.lyrics !== null) {
+                if (!found && row.songartist === artist && row.songtitle === title) {
                     res.render('song', {
                         user: req.user,
                         error: req.flash('error'),
@@ -39,9 +41,9 @@ router.get('/', (req, res) => {
             })
             if (!found) {
                 //calls API if song is not found in the database
-                fetch('https://api.lyrics.ovh/v1/' + artist + '/' + title)
-                    .then(result => result.json())
-                    .then(json => {
+                findLyrics(title, artist)
+                    .then(lyrics => {
+                        saveSong(artist, title, lyrics)
                         res.render('song', {
                             user: req.user,
                             error: req.flash('error'),
@@ -50,7 +52,7 @@ router.get('/', (req, res) => {
                             songdisplay: title + " By " + artist,
                             songtitle: title,
                             songartist: artist,
-                            songlyrics: json.lyrics.replace(/[\r\n]+/g, '<br />'),
+                            songlyrics: lyrics.replace(/[\r\n]+/g, '<br />'),
                             coverlink: undefined
                         })
                     })
@@ -65,6 +67,22 @@ router.get('/', (req, res) => {
             throw err
         })
 })
+
+const saveSong = (artist, title, lyrics) => {
+    fetch('https://api.deezer.com/2.0/search?q=' + encodeURIComponent(artist + ' - ' + title))
+        .then(result => result.json())
+        .then(result => {
+            pool.query('INSERT INTO songs (id, songartist, songtitle, album, coverlink, artistpicture, lyrics) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *', [uuidv4(), artist, title, result.data[0].album.title, result.data[0].album.cover_medium, result.data[0].artist.picture_medium, lyrics.replace(/[\r\n]+/g, '<br />')])
+                .then(console.log('Song Saved!'))
+                .catch(err => {
+                    if (err.code === '23505') console.log('Song already present!')
+                    else throw err
+                })
+        })
+        .catch(err => {
+            throw err
+        })
+}
 
 //gets lyrics page for a random song
 router.get('/random', (req, res) => {
@@ -84,31 +102,38 @@ router.post('/add', ensureAuthenticated, (req, res) => {
     //if the query is malformed
     if (!artist || !title) {
         req.flash('error', 'Something went wrong')
-        res.redirect('/song?song=' + title + ' - ' + artist)
+        res.redirect(req.header('Referer') || '/song?song=' + title + ' - ' + artist)
         return
     }
-    fetch('https://api.lyrics.ovh/suggest/' + title + ' - ' + artist)
-        .then(result => result.json())
+    pool.query('SELECT id FROM songs WHERE songartist = $1 AND songtitle = $2', [artist, title])
         .then(result => {
-            pool.query('INSERT INTO songs (userid, songartist, songtitle, album, coverlink, artistpicture, lyrics) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *', [req.user.id, artist, title, result.data[0].album.title, result.data[0].album.cover_medium, result.data[0].artist.picture_medium, req.body.lyrics.trim()])
-                .then(res.sendStatus(200))
+            pool.query('INSERT INTO usersongs (userid,songid) VALUES ($1, $2)', [req.user.id, result.rows[0].id])
+                .then(() => {
+                    req.flash('success', 'Song saved!')
+                    res.redirect(req.header('Referer') || '/song?song=' + title + ' - ' + artist)
+                    return
+                })
                 .catch(err => {
-                    if (err.code === '23505') res.sendStatus(400)
-                    else res.sendStatus(500)
+                    if (err.code === '23505') {
+                        req.flash('warn', 'Song already saved!')
+                        res.redirect(req.header('Referer') || '/song?song=' + title + ' - ' + artist)
+                        return
+                    } else {
+                        throw err
+                    }
                 })
         })
         .catch(err => {
-            console.log(err)
-            res.status(500).send(err.message)
+            throw err
         })
 })
 
 //remove song from account
-router.post('/remove', (req, res) => {
+router.post('/remove', ensureAuthenticated, (req, res) => {
     var song = req.query.song
     var artist = song.split(' - ')[1]
     var title = song.split(' - ')[0]
-    pool.query('DELETE FROM songs WHERE songartist = $1 AND songtitle = $2 AND userid = $3', [artist, title, req.user.id])
+    pool.query('DELETE FROM usersongs USING songs WHERE songs.id = usersongs.songid AND songartist = $1 AND songtitle = $2 AND usersongs.userid = $3', [artist, title, req.user.id])
         .then(result => {
             req.flash('success', 'Song deleted from your account')
             res.redirect('/account')

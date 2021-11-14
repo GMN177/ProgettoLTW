@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
+    "bluebird": "^3.7.2",
+    "cheerio": "*",
     "connect-flash": "^0.1.1",
     "connect-pg-simple": "^7.0.0",
     "cookie-parser": "^1.4.5",
@@ -19,6 +21,7 @@
     "ejs": "^3.1.6",
     "express": "^4.17.1",
     "express-session": "^1.17.2",
+    "lodash": "^4.17.21",
     "morgan": "^1.10.0",
     "multer": "^1.4.2",
     "node-fetch": "^2.6.1",

@@ -1,9 +1,7 @@
 'use strict';
 
 //calls functions when page is ready
-$(() => {
-    autocomplete()
-})
+$(autocomplete())
 
 //suggestion list for song input
 function autocomplete() {
@@ -29,11 +27,11 @@ function autocomplete() {
         console.log('Search suggestions for', val)
         //get suggestions
         $.getJSON('https://api.lyrics.ovh/suggest/' + val)
-            .done(function (data) {
+            .done(data => {
                 var finalResults = []
                 var seenResults = []
                 //filter top 10 result
-                data.data.forEach(function (result) {
+                data.data.forEach(result => {
                     if (seenResults.length >= 10) return
                     var t = result.title + ' - ' + result.artist.name
                     if (seenResults.indexOf(t) >= 0) return
