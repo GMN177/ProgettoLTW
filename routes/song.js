@@ -1,6 +1,7 @@
 'use strict'
 const express = require('express')
-const fetch = require('node-fetch')
+//const fetch = require('node-fetch')
+const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args))
 const uuidv4 = require('uuid').v4
 const pool = require('../config/database')
 const {

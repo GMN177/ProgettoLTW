@@ -1,6 +1,7 @@
 'use strict'
 const _ = require('lodash')
-const fetch = require('node-fetch')
+//const fetch = require('node-fetch')
+const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args))
 const cheerio = require('cheerio')
 const Promise = require('bluebird')
 
