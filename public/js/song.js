@@ -3,7 +3,7 @@
 //copy to clipboard
 function copiaTesto() {
     $('#bottone').attr('enabled', 'enabled')
-    var range = document.createRange()
+    let range = document.createRange()
     range.selectNode(document.getElementById('songLyrics'))
     window.getSelection().removeAllRanges() // clear current selection
     window.getSelection().addRange(range) // to select text

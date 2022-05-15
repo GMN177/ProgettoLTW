@@ -82,7 +82,7 @@ app.use('/register', register_routes)
 
 //if all else fails 404 status
 app.use((req, res, next) => {
-    var err = new Error('Not Found')
+    let err = new Error('Not Found')
     err.status = 404
     next(err)
 })

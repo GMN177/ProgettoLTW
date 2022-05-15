@@ -11,9 +11,9 @@ const {
 const router = express.Router()
 
 router.get('/', (req, res) => {
-    var song = req.query.song
-    var artist = song.split(' - ')[1]
-    var title = song.split(' - ')[0]
+    let song = req.query.song
+    let artist = song.split(' - ')[1]
+    let title = song.split(' - ')[0]
     //if the query is malformed
     if (!artist || !title) {
         req.flash('warn', 'Artist or Title missing. Select a song from the search list')
@@ -22,7 +22,7 @@ router.get('/', (req, res) => {
     }
     pool.query('SELECT DISTINCT songartist, songtitle, lyrics, coverlink FROM songs')
         .then(result => {
-            var found = false
+            let found = false
             result.rows.forEach(row => {
                 //searches songs chached in database
                 if (!found && row.songartist === artist && row.songtitle === title) {
@@ -89,7 +89,7 @@ const saveSong = (artist, title, lyrics) => {
 router.get('/random', (req, res) => {
     pool.query('SELECT DISTINCT songartist, songtitle FROM songs')
         .then(result => {
-            var index = Math.floor(Math.random() * (result.rowCount - 1))
+            let index = Math.floor(Math.random() * (result.rowCount - 1))
             res.redirect('/song?song=' + result.rows[index].songtitle.trim() + ' - ' + result.rows[index].songartist.trim())
         })
         .catch(err => {
@@ -98,8 +98,8 @@ router.get('/random', (req, res) => {
 })
 
 router.post('/add', ensureAuthenticated, (req, res) => {
-    var title = req.body.title.trim()
-    var artist = req.body.artist.trim()
+    let title = req.body.title.trim()
+    let artist = req.body.artist.trim()
     //if the query is malformed
     if (!artist || !title) {
         req.flash('error', 'Something went wrong')
@@ -131,9 +131,9 @@ router.post('/add', ensureAuthenticated, (req, res) => {
 
 //remove song from account
 router.post('/remove', ensureAuthenticated, (req, res) => {
-    var song = req.query.song
-    var artist = song.split(' - ')[1]
-    var title = song.split(' - ')[0]
+    let song = req.query.song
+    let artist = song.split(' - ')[1]
+    let title = song.split(' - ')[0]
     pool.query('DELETE FROM usersongs USING songs WHERE songs.id = usersongs.songid AND songartist = $1 AND songtitle = $2 AND usersongs.userid = $3', [artist, title, req.user.id])
         .then(result => {
             req.flash('success', 'Song deleted from your account')

@@ -5,8 +5,8 @@ $(autocomplete())
 
 //suggestion list for song input
 function autocomplete() {
-    var inp = $("#myInput")
-    var timeoutSuggest
+    let inp = $("#myInput")
+    let timeoutSuggest
 
     //event listener for input
     inp.on('input', function () {
@@ -17,8 +17,8 @@ function autocomplete() {
 
     //suggestions handler
     function suggestions() {
-        var a, b, i, val = inp.val()
-        var x = $('#autocmpl')
+        let a, b, i, val = inp.val()
+        let x = $('#autocmpl')
         if (x) x.remove()
         if (!val) return
         a = document.createElement('datalist')
@@ -28,12 +28,12 @@ function autocomplete() {
         //get suggestions
         $.getJSON('https://api.lyrics.ovh/suggest/' + val)
             .done(data => {
-                var finalResults = []
-                var seenResults = []
+                let finalResults = []
+                let seenResults = []
                 //filter top 10 result
                 data.data.forEach(result => {
                     if (seenResults.length >= 10) return
-                    var t = result.title + ' - ' + result.artist.name
+                    let t = result.title + ' - ' + result.artist.name
                     if (seenResults.indexOf(t) >= 0) return
                     seenResults.push(t)
                     finalResults.push({
@@ -42,7 +42,7 @@ function autocomplete() {
                         title: result.title
                     })
                 })
-                var array = finalResults
+                let array = finalResults
                 for (i = 0; i < array.length; i++) {
                     //filter result if it contains searched value
                     if (array[i].display.toUpperCase().includes(val.toUpperCase())) {
