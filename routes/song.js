@@ -10,7 +10,7 @@ const {
 } = require('../util/index')
 const router = express.Router()
 
-router.get('/', (req, res) => {
+router.get('/', (req, res, next) => {
     let song = req.query.song
     let artist = song.split(' - ')[1]
     let title = song.split(' - ')[0]
@@ -44,7 +44,7 @@ router.get('/', (req, res) => {
                 //calls API if song is not found in the database
                 findLyrics(title, artist)
                     .then(lyrics => {
-                        saveSong(artist, title, lyrics)
+                        saveSong(artist, title, lyrics, next)
                         res.render('song', {
                             user: req.user,
                             error: req.flash('error'),
@@ -64,40 +64,34 @@ router.get('/', (req, res) => {
                     })
             }
         })
-        .catch(err => {
-            throw err
-        })
+        .catch(e => next(e))
 })
 
-const saveSong = (artist, title, lyrics) => {
+const saveSong = (artist, title, lyrics, next) => {
     fetch('https://api.deezer.com/2.0/search?q=' + encodeURIComponent(artist + ' - ' + title))
         .then(result => result.json())
         .then(result => {
             pool.query('INSERT INTO songs (id, songartist, songtitle, album, coverlink, artistpicture, lyrics) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *', [uuidv4(), artist, title, result.data[0].album.title, result.data[0].album.cover_medium, result.data[0].artist.picture_medium, lyrics.replace(/[\r\n]+/g, '<br />')])
                 .then(console.log('Song Saved!'))
-                .catch(err => {
-                    if (err.code === '23505') console.log('Song already present!')
-                    else throw err
+                .catch(e => {
+                    if (e.code === '23505') console.log('Song already present!')
+                    else next(e)
                 })
         })
-        .catch(err => {
-            throw err
-        })
+        .catch(e => next(e))
 }
 
 //gets lyrics page for a random song
-router.get('/random', (req, res) => {
+router.get('/random', (req, res, next) => {
     pool.query('SELECT DISTINCT songartist, songtitle FROM songs')
         .then(result => {
             let index = Math.floor(Math.random() * (result.rowCount - 1))
             res.redirect('/song?song=' + result.rows[index].songtitle.trim() + ' - ' + result.rows[index].songartist.trim())
         })
-        .catch(err => {
-            throw err
-        })
+        .catch(e => next(e))
 })
 
-router.post('/add', ensureAuthenticated, (req, res) => {
+router.post('/add', ensureAuthenticated, (req, res, next) => {
     let title = req.body.title.trim()
     let artist = req.body.artist.trim()
     //if the query is malformed
@@ -114,23 +108,21 @@ router.post('/add', ensureAuthenticated, (req, res) => {
                     res.redirect(req.header('Referer') || '/song?song=' + title + ' - ' + artist)
                     return
                 })
-                .catch(err => {
-                    if (err.code === '23505') {
+                .catch(e => {
+                    if (e.code === '23505') {
                         req.flash('warn', 'Song already saved!')
                         res.redirect(req.header('Referer') || '/song?song=' + title + ' - ' + artist)
                         return
                     } else {
-                        throw err
+                        next(e)
                     }
                 })
         })
-        .catch(err => {
-            throw err
-        })
+        .catch(e => next(e))
 })
 
 //remove song from account
-router.post('/remove', ensureAuthenticated, (req, res) => {
+router.post('/remove', ensureAuthenticated, (req, res, next) => {
     let song = req.query.song
     let artist = song.split(' - ')[1]
     let title = song.split(' - ')[0]
@@ -139,9 +131,7 @@ router.post('/remove', ensureAuthenticated, (req, res) => {
             req.flash('success', 'Song deleted from your account')
             res.redirect('/account')
         })
-        .catch(err => {
-            throw err
-        })
+        .catch(e => next(e))
 })
 
 module.exports = router

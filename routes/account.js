@@ -40,12 +40,10 @@ router.get('/', ensureAuthenticated, (req, res) => {
                 profPicture: (req.user.picture) ? '/img/userPictures/' + req.user.picture : '/img/stockProfile.jpg'
             })
         })
-        .catch(err => {
-            throw err
-        })
+        .catch(e => next(e))
 })
 
-router.get('/other', (req, res) => {
+router.get('/other', (req, res, next) => {
     pool.query('SELECT id, email, firstname, lastname, picture FROM users WHERE username = $1', [req.query.username])
         .then(result => result.rows)
         .then(users => {
@@ -72,9 +70,7 @@ router.get('/other', (req, res) => {
                     })
                 })
         })
-        .catch(err => {
-            throw err
-        })
+        .catch(e => next(e))
 })
 
 router.post('/changePassword', ensureAuthenticated, (req, res, next) => {
@@ -103,18 +99,16 @@ router.post('/changeUsername', ensureAuthenticated, (req, res, next) => {
     failureFlash: true
 }))
 
-router.post('/changePicture', ensureAuthenticated, upload.single('profilepicture'), (req, res) => {
+router.post('/changePicture', ensureAuthenticated, upload.single('profilepicture'), (req, res, next) => {
     pool.query('UPDATE users SET picture = $1 WHERE username = $2', [req.file.filename, req.user.username])
         .then(result => {
             req.flash('success', 'Profile picture changed!')
             res.redirect('/account')
         })
-        .catch(err => {
-            throw err
-        })
+        .catch(e => next(e))
 })
 
-router.post('/delete', ensureAuthenticated, (req, res) => {
+router.post('/delete', ensureAuthenticated, (req, res, next) => {
     pool.query('DELETE FROM users WHERE username = $1', [req.user.username])
         .then(result => {
             console.log('User [' + req.user.username + '] has been deleted.')
@@ -122,9 +116,7 @@ router.post('/delete', ensureAuthenticated, (req, res) => {
             req.flash('success', 'User deleted')
             res.redirect('/')
         })
-        .catch(err => {
-            throw err
-        })
+        .catch(e => next(e))
 })
 
 module.exports = router

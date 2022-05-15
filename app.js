@@ -87,6 +87,7 @@ app.use((req, res, next) => {
     next(err)
 })
 
+//global error handler
 if (app.get('env') === 'development') {
     app.use((err, req, res, next) => {
         res.status(err.status || 500)

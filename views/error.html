@@ -11,7 +11,10 @@
 </head>
 
 <body>
-    <h1><%= message %></h1>
-    <h2><%= error.status %></h2>
-    <pre><%= error.stack %></pre>
+    <% if (typeof user === "undefined") { %>
+        <h1>USER: <%= user %></h1>
+    <% } %>
+    <h1>MESSAGE: <%= message %></h1>
+    <h2>STATUS: <%= error.status %></h2>
+    <pre>STACK: <%= error.stack %></pre>
 </body>
