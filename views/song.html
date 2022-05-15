@@ -4,8 +4,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title><%= songdisplay %></title>
-    <link href="css/bootstrap/bootstrap.min.css" rel="stylesheet">
-    <link href="css/style.css" rel="stylesheet">
+    <link href="/css/bootstrap/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/style.css" rel="stylesheet">
 </head>
 
 <body class="text-center">
@@ -13,12 +13,12 @@
     <header class="p-3 bg-dark text-white">
         <div class="container" id="header">
             <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
-                <a class="navbar-brand" href="index"><img src="img/logo.png" alt="" width="60"></a>
+                <a class="navbar-brand" href="/"><img src="/img/logo.png" alt="" width="60"></a>
                 <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-lg-0">
-                    <li><a href="index" class="nav-link px-2" id="userandrandom">Home</a></li>
+                    <li><a href="/" class="nav-link px-2" id="userandrandom">Home</a></li>
                     <li><a href="#" class="nav-link px-2" id="userandrandom" data-bs-toggle="modal"
                             data-bs-target="#exampleModal">Search for a user</a></li>
-                    <li><a href="/randomSong" class="nav-link px-2" id="userandrandom">Random song</a></li>
+                    <li><a href="/song/random" class="nav-link px-2" id="userandrandom">Random song</a></li>
                 </ul>
                 <form id='lyricsForm' method='GET' autocomplete="off" action="/song" class="col-lg-3 me-4">
                     <div class="input-group">
@@ -29,9 +29,12 @@
                     </div>
                 </form>
                 <div id="AOL" class="text-end">
-                    <button type="button" class="btn me-2" id="loginbtn" onclick="location.href='login'">Login</button>
-                    <button type="button" class="btn" id="registerbtn"
-                        onclick="location.href='register'">Sign-up</button>
+                    <% if (typeof user === "undefined") { %>
+                    <a class="btn" id="loginbtn" href="/login">Login</a>
+                    <a class="btn" id="registerbtn" href="/register">Sign-Up</a>
+                    <% } else { %>
+                    <a class="btn" id="loginbtn" href="/account">Account</a>
+                    <% } %>
                 </div>
             </div>
         </div>
@@ -46,10 +49,11 @@
                 </div>
                 <div class="modal-body">
                     <br>
-                    <form id='userForm' method='GET' action="/getUser">
+                    <form id='userForm' method='GET' action="/account/other">
                         <div class="input-group">
-                            <input type="text" name="email" class="form-control border-2 rounded-start"
-                                style="border-color: #1ed760;" placeholder="Type the email of a user" id="userInput">
+                            <input type="text" name="username" class="form-control border-2 rounded-start"
+                                style="border-color: #1ed760;" placeholder="Type the username of a user" id="userInput"
+                                autofocus>
                             <button class="btn" id="searchbtn">Cerca</button>
                         </div>
                     </form>
@@ -90,8 +94,17 @@
                 <!-- Sticky list -->
                 <div class="position-sticky" style="top: 2rem;">
                     <ul class="list-unstyled">
-                        <li><button type="button" class="btn mb-1 btn-sm" id="registerbtn" onclick="saveSong()">Salva
-                                la canzone</button></li>
+                        <li>
+                            <form id='saveSongForm' method='POST' action="/song/add">
+                                <input type="text" id="song-title" class="song-title" value="<%= songtitle %>"
+                                    name="title" hidden>
+                                <input type="text" id="song-artist" class="song-author" value="<%= songartist %>"
+                                    name="artist" hidden>
+                                <input type="text" id="songLyrics" class="mb-4" value="<%= songlyrics %>" name="lyrics"
+                                    hidden>
+                                <button class="btn mb-1 btn-sm" id="registerbtn">Salva la canzone</button>
+                            </form>
+                        </li>
                         <li><button type="button" id="bottone" class="btn btn-danger mb-1 btn-sm"
                                 onclick="copiaTesto()">Copia il testo</button></li>
                         <li><a href="https://twitter.com/intent/tweet?text=Ecco una canzone per te!"
@@ -109,9 +122,15 @@
                     <!-- Message alerts -->
                     <div class="p-2 m-lg-3">
                         <p id='message' class='alert'></p>
-                        <% if (typeof message !== "undefined" && typeof type !== "undefined") { %>
-                        <p class='alert <%= type %>'><%= message %></p>
-                        <% } %>
+                        <% error.forEach(e => { %>
+                        <p class='mt-3 alert alert-danger'><%= e %></p>
+                        <% }) %>
+                        <% warn.forEach(w => { %>
+                        <p class='mt-3 alert alert-warning'><%= w %></p>
+                        <% }) %>
+                        <% success.forEach(s => { %>
+                        <p class='mt-3 alert alert-success'><%= s %></p>
+                        <% }) %>
                     </div>
                 </div>
             </div>
@@ -120,10 +139,10 @@
     <div id="fb-root"></div>
     <script async defer crossorigin="anonymous" src="https://connect.facebook.net/it_IT/sdk.js#xfbml=1&version=v10.0"
         nonce="sVVZpYHC"></script>
-    <script src="js/jquery-3.6.0.min.js"></script>
-    <script src="js/bootstrap/bootstrap.bundle.min.js"></script>
-    <script src="js/header.js" charset="utf-8"></script>
-    <script src="js/song.js" charset="utf-8"></script>
+    <script src="/js/jquery-3.6.0.min.js"></script>
+    <script src="/js/bootstrap/bootstrap.bundle.min.js"></script>
+    <script src="/js/header.js" charset="utf-8"></script>
+    <script src="/js/song.js" charset="utf-8"></script>
     <script src="https://cdn.jsdelivr.net/gh/vast-engineering/jquery-popup-overlay@2/jquery.popupoverlay.min.js">
     </script>
     <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>

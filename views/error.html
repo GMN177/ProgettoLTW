@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>
+        Error
+    </title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+</head>
+
+<body>
+    <% if (typeof user === "undefined") { %>
+        <h1>USER: <%= user %></h1>
+    <% } %>
+    <h1>MESSAGE: <%= message %></h1>
+    <h2>STATUS: <%= error.status %></h2>
+    <pre>STACK: <%= error.stack %></pre>
+</body>
