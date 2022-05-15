@@ -5,7 +5,7 @@ const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch
 const cheerio = require('cheerio')
 const Promise = require('bluebird')
 
-exports.ensureAuthenticated = (req, res, next) => {
+const ensureAuthenticated = (req, res, next) => {
     if (req.isAuthenticated()) {
         return next()
     }
@@ -13,7 +13,7 @@ exports.ensureAuthenticated = (req, res, next) => {
     res.redirect(req.header('Referer') || '/login')
 }
 
-exports.findLyrics = (title, artistName) => {
+const findLyrics = (title, artistName) => {
     let promises = []
 
     const textln = html => {
@@ -89,4 +89,9 @@ exports.findLyrics = (title, artistName) => {
     return Promise.any(promises).then(lyrics => {
         return lyrics
     })
+}
+
+module.exports = {
+    ensureAuthenticated,
+    findLyrics,
 }
